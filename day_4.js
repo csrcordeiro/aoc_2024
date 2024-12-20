@@ -7,15 +7,23 @@ const data = fs.readFileSync('./resources/day4.in', 'utf-8');
 const lines = data.split("\n").filter((e) => e.length > 0);
 const matrix = lines.map((e) => e.split(''));
 
-function extractXsPositions() {
+function extractAsPositions() {
+  return extractPosisionsForLetter('A');
+}
+
+function extractPosisionsForLetter(letter) {
   return matrix.flatMap((line, y) => {
     return line.map((charr, x) => {
-      if (charr === 'X')
+      if (charr === letter)
         return [x, y];
     });
   }).filter(
     (truthy) => truthy
   );
+}
+
+function extractXsPositions() {
+  return extractPosisionsForLetter('X');
 }
 
 function count(xIndexes) {
@@ -55,6 +63,7 @@ function countDiagonals(xx, xy) {
   }).filter((truthy) => truthy);
 
   return countXmas(
+    isXmas,
     arrayToString(firstDiagonal),
     arrayToString(secondDiagonal),
     arrayToString(thirdDiagonal),
@@ -75,6 +84,7 @@ function countVertical(xx, xy) {
   const vBackSlice = matrix.slice(xy-3, xy+1).map((line) => line[xx]);
 
   return countXmas(
+    isXmas,
     arrayToString(vSlice),
     arrayToString(vBackSlice),
   );
@@ -85,14 +95,15 @@ function countHorizontal(xx, xy) {
   const hBackSlice = matrix[xy].slice(xx-3, xx+1);
 
   return countXmas(
+    isXmas,
     arrayToString(hSlice),
     arrayToString(hBackSlice),
   );
 }
 
-function countXmas(...strings) {
+function countXmas(checkXmasFunc, ...strings) {
   return strings.map(
-    (slice) => isXmas(slice)
+    (slice) => checkXmasFunc(slice)
   ).filter(
     (truthy) => truthy
   ).length;
@@ -102,11 +113,51 @@ function arrayToString(array) {
   return array.join('');
 }
 
+function isCrossXmas(string) {
+  return string === 'MAS' || string === 'SAM';
+}
+
 function isXmas(string) {
   return string === 'XMAS' || string === 'SAMX';
 }
 
-const indexes = extractXsPositions();
+function getChar(xx, yy) {
+  const row = matrix[yy];
+  const charr = (typeof row !== 'undefined') ? row[xx] : '';
 
-console.log(`Part 1: ${count(indexes)}`);
+  return (typeof charr !== 'undefined') ? charr : '';
+}
+
+function extractCrossXmas(x, y) {
+  return [
+    getChar(x+1, y-1) +  getChar(x, y) + getChar(x-1, y+1),
+    getChar(x-1, y-1) +  getChar(x, y) + getChar(x+1, y+1),
+  ];
+}
+
+function countX(aIndexes) {
+  let counter = 0;
+
+  for (const index of aIndexes) {
+    const [x, y] = index;
+    const [first, second] = extractCrossXmas(x, y);
+
+    const ammountOfXmas= countXmas(
+      isCrossXmas,
+      first,
+      second
+    );
+
+    if (ammountOfXmas === 2)
+      counter++;
+  }
+
+  return counter;
+}
+
+const xIndexes = extractXsPositions();
+const aIndexes = extractAsPositions();
+
+console.log(`Part 1: ${count(xIndexes)}`);
+console.log(`Part 2: ${countX(aIndexes)}`);
 
