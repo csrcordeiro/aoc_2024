@@ -38,12 +38,12 @@ function computeDependencies() {
 }
 
 function hasDependency(pageNumber, dependencies) {
-  return dependencies.indexOf(pageNumber) > -1
+  return dependencies.indexOf(pageNumber) > -1;
 }
 
 function hasNoLock(subPages, dependencies) {
   if (dependencies === void 0 || dependencies.length == 0) {
-    return false;
+    return true;
   }
 
   return subPages.every((pageNumber) => !hasDependency(pageNumber, dependencies));
