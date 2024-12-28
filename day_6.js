@@ -45,7 +45,7 @@ function isInGrid(x, y) {
   return (x < X_MAX && x >= 0) && (y < Y_MAX && y >= 0);
 }
 
-function partOne() {
+function walkGrid() {
   let [x, y, direction] = findInitialGuardCoord();
   const breadcrumb = new Set();
 
@@ -66,8 +66,65 @@ function partOne() {
 
   } while(true);
 
+  return breadcrumb;
+}
 
-  return breadcrumb.size;
+function partOne() {
+  return walkGrid().size;
+}
+
+// This is bruteforce search for cycles.
+function partTwo() {
+  let cycles = 0;
+
+  const initialPoint = findInitialGuardCoord();
+
+  const visited = walkGrid().values().toArray().map(
+    (e) => e.split(',')
+  .map(
+    (f) => parseInt(f)
+  ));
+
+  const tolerance = visited.length;
+
+  visited.forEach((candidate) => {
+    if (isCycle(initialPoint, candidate, tolerance)) {
+      cycles++;
+    }
+  });
+
+  return cycles;
+}
+
+function isCycle(initialPoint, candidate, tolerance) {
+  let [x, y, direction] = initialPoint;
+  let turn = 0;
+
+  const newGrid = grid.map((line) => line.split(''));
+
+  newGrid[candidate[1]][candidate[0]] = '#';
+
+  do {
+    const [nextX, nextY, nextDirection] = walk(x, y, direction);
+
+    if (!isInGrid(nextX, nextY)) {
+      return false;
+    }
+
+    if (turn >= tolerance) {
+      return true;
+    }
+
+    if (newGrid[nextY][nextX] === '#') {
+      direction = DIRECTION_CHANGE[direction];
+      turn++;
+    } else {
+      [x, y, direction] = [nextX, nextY, nextDirection];
+    }
+
+
+  } while(true);
 }
 
 console.log(`Part 1: ${partOne()}`);
+console.log(`Part 2: ${partTwo()}`);
