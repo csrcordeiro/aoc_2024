@@ -45,6 +45,10 @@ function calculate(equations, permutations) {
       equations.reduce((acc, number) => {
         const op = ops.shift();
 
+        if (op === 'c') {
+          return parseInt(`${acc}${number}`);
+        }
+
         if (op === '+') {
           return acc + number;
         } else {
@@ -56,11 +60,11 @@ function calculate(equations, permutations) {
   return results;
 }
 
-function partOne() {
+function processSymbols(symbols) {
   return values_numbers.map((entry) => {
     const target = entry[0];
     const equations = entry[1];
-    const permutations = possibilities(equations.length - 1, ['+', '*']);
+    const permutations = possibilities(equations.length - 1, symbols);
     const calculatedValues = calculate(equations, permutations);
 
     return calculatedValues.some((e) => e === target) ? target : 0;
@@ -70,4 +74,14 @@ function partOne() {
   );
 }
 
+function partOne() {
+  return processSymbols(['+', '*']);
+}
+
+function partTwo() {
+  // I'll be using 'c' as a concatanation symbol.
+  return processSymbols(['+', '*', 'c']);
+}
+
 console.log(`Part 1: ${partOne()}`);
+console.log(`Part 2: ${partTwo()}`);
