@@ -10,28 +10,21 @@ const values_numbers = data.split("\n")
   .filter((line) => line.length > 0)
   .map((numbers) => [parseInt(numbers[0]), numbers[1].map((e) => parseInt(e))]);
 
-function possibilities(n) {
-  if (n === 1) {
-    return ['+*'];
-  }
+function possibilities(n, ops) {
+  let init = [...ops];
 
-  let init = [
-    '++',
-    '+*',
-    '*+',
-    '**',
-  ]
-
-  if (n === 2) {
+  if (n === 1)
     return init;
-  }
 
   let permutations = [];
-  for (let i = 2; i < n; i++) {
+
+  for (let i = 1; i < n; i++) {
     for (let j = 0; j < init.length; j++) {
       const str = init[j];
-      permutations.push(init[j] + '+');
-      permutations.push(init[j] + '*');
+
+      for (let o = 0; o < ops.length; o++) {
+        permutations.push(str + ops[o]);
+      }
     }
 
     if (i < n - 1) {
@@ -44,13 +37,6 @@ function possibilities(n) {
 }
 
 function calculate(equations, permutations) {
-  if (equations.length === 2) {
-    return [
-      equations[0] + equations[1],
-      equations[0] * equations[1],
-    ];
-  }
-
   const results = [];
   for (let i = 0; i < permutations.length; i++) {
     const ops = permutations[i].split('');
@@ -74,7 +60,7 @@ function partOne() {
   return values_numbers.map((entry) => {
     const target = entry[0];
     const equations = entry[1];
-    const permutations = possibilities(equations.length - 1);
+    const permutations = possibilities(equations.length - 1, ['+', '*']);
     const calculatedValues = calculate(equations, permutations);
 
     return calculatedValues.some((e) => e === target) ? target : 0;
@@ -85,4 +71,3 @@ function partOne() {
 }
 
 console.log(`Part 1: ${partOne()}`);
-
