@@ -22,4 +22,13 @@ function partOne() {
   }).reduce((acc, e) => acc + e);
 }
 
+function partTwo() {
+  return firstColumn.map((e) => {
+    const reps = secondColumn.filter((s) => s === e).length;
+
+    return e * reps;
+  }).reduce((acc, e) => acc + e);
+}
+
 console.log(`Part 1: ${partOne()}`);
+console.log(`Part 2: ${partTwo()}`);
