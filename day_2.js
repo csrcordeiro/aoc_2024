@@ -35,6 +35,18 @@ function isSafe(levels) {
   }).every((e) => e);
 }
 
+function levelCombinations(level) {
+  const combs = [];
+
+  for (let i = 0; i < level.length; i++) {
+    combs.push(
+      level.filter((_e, idx) => idx !== i)
+    );
+  }
+
+  return combs;
+}
+
 function partOne() {
   return measures.map(
     (levels) => isSafe(levels))
@@ -43,4 +55,18 @@ function partOne() {
   ).length;
 }
 
+function partTwo() {
+  return measures
+    // Compute all combinations for each level.
+    .map((levels) => levelCombinations(levels))
+    // Check the safety of each level.
+    .map((combs) => combs.map((comb) => isSafe(comb)))
+    // Check if any of them is safe.
+    .map((e) => e.some((ee) => ee))
+    // select all safe.
+    .filter((e) => e)
+    .length
+}
+
 console.log(`Part 1: ${partOne()}`);
+console.log(`Part 2: ${partTwo()}`);
