@@ -36,38 +36,41 @@ function possibilities(n, ops) {
   return permutations;
 }
 
-function calculate(equations, permutations) {
-  const results = [];
+function matchedEquation(equations, permutations, target) {
   for (let i = 0; i < permutations.length; i++) {
     const ops = permutations[i].split('');
 
-    results.push(
-      equations.reduce((acc, number) => {
-        const op = ops.shift();
+    const value = equations.reduce((acc, number) => {
+      const op = ops.shift();
 
-        if (op === 'c') {
-          return parseInt(`${acc}${number}`);
-        }
+      if (op === 'c') {
+        return parseInt(`${acc}${number}`);
+      }
 
-        if (op === '+') {
-          return acc + number;
-        } else {
-          return acc * number;
-        }
-      })
-    );
+      if (op === '+') {
+        return acc + number;
+
+      } else {
+        return acc * number;
+
+      }
+    });
+
+    if (value === target)
+      return target;
+
   }
-  return results;
+
+  return 0;
 }
 
 function processSymbols(symbols) {
   return values_numbers.map((entry) => {
-    const target = entry[0];
-    const equations = entry[1];
-    const permutations = possibilities(equations.length - 1, symbols);
-    const calculatedValues = calculate(equations, permutations);
+    const [target, equations] = entry;
 
-    return calculatedValues.some((e) => e === target) ? target : 0;
+    const permutations = possibilities(equations.length - 1, symbols);
+
+    return matchedEquation(equations, permutations, target);
 
   }).reduce(
     (acc, number) => acc + number
