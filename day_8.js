@@ -59,27 +59,18 @@ function mapAntennas() {
 
 mapAntennas();
 
-
-function partOne() {
+function extractAntiNodes(propagateSignal = false) {
   let knownAntinodes = [];
 
   return Object.entries(ANTENNAS).flatMap((entry) => {
     const [key, values] = entry;
 
     const antinodes = values.flatMap((point, idx) => {
-      const [x, y] = [point.x, point.y];
 
       return values.slice(idx+1).flatMap((other) => {
-        const [otherX, otherY] = [other.x, other.y];
 
-        const diffX = x - otherX;
-        const diffY = y - otherY;
-
-        const newPoints = [
-          new Point(x + diffX, y + diffY),
-          new Point(otherX - diffX, otherY - diffY)
-        ].filter(
-          (np) => knownAntinodes.every((p) => !p.equals(np))
+        const newPoints = generatePoint(point, other, propagateSignal).filter(
+          (np) => knownAntinodes.every((p) => !p.equals(np)) && isInBound(np)
         );
 
         knownAntinodes = newPoints.concat(knownAntinodes);
@@ -92,7 +83,44 @@ function partOne() {
     );
 
     return antinodes;
-  }).length;
+  });
+}
+
+function generatePoint(point, otherPoint, propagateSignal) {
+  const diffX = point.x - otherPoint.x;
+  const diffY = point.y - otherPoint.y;
+
+  const points = [
+    new Point(point.x + diffX, point.y + diffY),
+    new Point(otherPoint.x - diffX, otherPoint.y - diffY)
+  ];
+
+  if (!propagateSignal)
+    return points;
+
+  let [pa, pb] = points;
+  let signal = 0;
+  while (signal < MAX_X) {
+    pa = new Point(pa.x + diffX, pa.y + diffY)
+    pb = new Point(pb.x - diffX, pb.y - diffY)
+
+    points.push(pa, pb);
+
+    signal++;
+  }
+
+  points.push(point, otherPoint);
+
+  return points;
+}
+
+function partOne() {
+  return extractAntiNodes(false).length;
+}
+
+function partTwo() {
+  return extractAntiNodes(true).length;
 }
 
 console.log(`Part 1: ${partOne()}`);
+console.log(`Part 2: ${partTwo()}`);
