@@ -2,7 +2,7 @@
 
 import fs from 'fs';
 
-const expressions = fs.readFileSync('./resources/day3.in', 'utf-8');
+const expressions = fs.readFileSync('../resources/day3.in', 'utf-8');
 
 function multiply(expression) {
   const numbersPattern = /\d+/g;

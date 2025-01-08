@@ -2,7 +2,7 @@
 
 import fs from 'fs';
 
-const data = fs.readFileSync('./resources/day2.in', 'utf-8');
+const data = fs.readFileSync('../resources/day2.in', 'utf-8');
 
 const measures = data.split("\n").map(
   (line) => line.split(" ").map((e) => parseInt(e))

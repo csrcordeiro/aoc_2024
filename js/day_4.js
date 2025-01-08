@@ -2,7 +2,7 @@
 
 import fs from 'fs';
 
-const data = fs.readFileSync('./resources/day4.in', 'utf-8');
+const data = fs.readFileSync('../resources/day4.in', 'utf-8');
 
 const lines = data.split("\n").filter((e) => e.length > 0);
 const matrix = lines.map((e) => e.split(''));

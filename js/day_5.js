@@ -2,7 +2,7 @@
 
 import fs from 'fs';
 
-const data = fs.readFileSync('./resources/day5.in', 'utf-8');
+const data = fs.readFileSync('../resources/day5.in', 'utf-8');
 
 const lines = data.split(/\n/);
 

@@ -2,7 +2,7 @@
 
 import fs from 'fs'
 
-const data = fs.readFileSync('./resources/day6.in', 'utf-8');
+const data = fs.readFileSync('../resources/day6.in', 'utf-8');
 
 const grid = data.split('\n');
 

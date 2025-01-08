@@ -2,7 +2,7 @@
 
 import fs from 'fs';
 
-const data = fs.readFileSync('./resources/day8.in', 'utf-8');
+const data = fs.readFileSync('../resources/day8.in', 'utf-8');
 
 const map = data.split('\n').map(
   (line) => line.split('')
