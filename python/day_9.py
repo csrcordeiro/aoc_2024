@@ -52,22 +52,15 @@ def defrag(disk):
     first_index = 0
     last_index = len(disk) - 1
 
-    while first_index + 1 < last_index + 1:
-        first_char = new_disk[first_index]
-        while first_char != '.':
+    while first_index + 1 < last_index - 1:
+        while new_disk[first_index] != '.':
             first_index += 1
-            first_char = new_disk[first_index]
 
-        last_char = new_disk[last_index]
-        while last_char == '.':
+        while new_disk[last_index] == '.':
             last_index -= 1
-            last_char = new_disk[last_index]
 
-        new_disk[first_index] = last_char
-        new_disk[last_index] = first_char
-
-        first_index += 1
-        last_index -= 1
+        new_disk[first_index] = new_disk[last_index]
+        new_disk[last_index] = '.'
 
     return new_disk
 
