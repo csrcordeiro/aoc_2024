@@ -71,32 +71,41 @@ def walk(start):
     return possible_points
 
 
-def part_one():
-    starts = map_starting_points()
+def walk_trail(start, unique=True):
     score = 0
+    processing_queue = []
+    point = start
+    visited = set()
 
-    for start in starts:
-        processing_queue = []
-        point = start
-        visited = set()
+    while True:
+        processing_queue = walk(point) + processing_queue
 
-        while True:
-            processing_queue = walk(point) + processing_queue
+        if len(processing_queue) == 0:
+            break
 
-            if len(processing_queue) == 0:
-                break
+        point = processing_queue.pop(0)
 
-            point = processing_queue.pop(0)
+        if unique and (start, point) in visited:
+            continue
 
-            if (start, point) in visited:
-                continue
+        if point.value == 9:
+            score += 1
 
-            if point.value == 9:
-                score += 1
-
-            visited.add((start, point))
+        visited.add((start, point))
 
     return score
 
 
+def part_one():
+    return sum((walk_trail(start) for start in map_starting_points()))
+
+
+def part_two():
+    return sum((
+        walk_trail(start, unique=False)
+        for start in map_starting_points()
+    ))
+
+
 print(f"Part 1: {part_one()}")
+print(f"Part 2: {part_two()}")
