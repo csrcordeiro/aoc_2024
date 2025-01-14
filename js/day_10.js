@@ -27,13 +27,16 @@ function mapTrailHeads() {
   return result;
 }
 
+
 function isInBound(x, y) {
   return x >= 0 && x < MAX_X && y >= 0 && y < MAX_Y;
 }
 
+
 function getSafeCoord(x, y) {
   return isInBound(x, y) ? [x, y, matrix[y][x]] : null;
 }
+
 
 function nextCoord(x, y, direction) {
   if ('up' === direction)
@@ -50,6 +53,7 @@ function nextCoord(x, y, direction) {
 
   throw new Error(`Unknown direction ${direction}`);
 }
+
 
 function walk(start) {
   const [x, y, value] = start;
@@ -72,35 +76,49 @@ function walk(start) {
   return possiblePoints;
 }
 
-function partOne() {
-  const trailheads = mapTrailHeads();
+
+function walkTrailhead(start, unique) {
   let score = 0;
+  let processingQueue = [];
+  let point = start;
+  const visited = new Set();
 
-  trailheads.forEach((start) => {
-    let processingQueue = [];
-    let point = start;
-    const visited = new Set();
+  while(true) {
+    processingQueue = walk(point).concat(processingQueue);
 
-    while(true) {
-      processingQueue = walk(point).concat(processingQueue);
+    if (processingQueue.length === 0)
+      break;
 
-      if (processingQueue.length === 0)
-        break;
+    point = processingQueue.shift();
 
-      point = processingQueue.shift();
+    if (unique && visited.has(`${point}`))
+      continue;
 
-      if (visited.has(`${point}`))
-        continue;
+    if (point[2] === 9)
+      score++;
 
-      if (point[2] === 9)
-        score++;
-
-      visited.add(`${point}`);
-    }
-
-  });
+    visited.add(`${point}`);
+  }
 
   return score;
 }
 
-console.log(partOne());
+
+function walkAllTrailheads(unique) {
+  return mapTrailHeads()
+    .map((start) => walkTrailhead(start, unique))
+    .reduce((acc, number) => acc + number);
+}
+
+
+function partOne() {
+  return walkAllTrailheads(true);
+}
+
+
+function partTwo() {
+  return walkAllTrailheads(false);
+}
+
+console.log(`Part 1: ${partOne()}`);
+console.log(`Part 2: ${partTwo()}`);
