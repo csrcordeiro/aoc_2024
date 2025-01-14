@@ -9,19 +9,47 @@ with open('../resources/day3.in', 'r') as file:
     data = [ line for line in data if len(line) > 0 ]
 
 
-def extract_pairs():
+def extract(pattern):
     results = []
     for line in data:
-        muls = re.findall(r"(mul\(\d+,\d+\))", line)
-        for mul in muls:
-            numbers = re.findall(r"(\d+)+", mul)
-            results.append(numbers)
+        muls = re.findall(pattern, line)
+        results.extend(muls)
 
-    return [(int(n[0]), int(n[1])) for n in results]
+    return results
+
+
+def multiply(mul):
+    numbers = re.findall(r"\d+", mul)
+    return int(numbers[0]) * int(numbers[1])
+
+
+def tokenize(patterns):
+    selection = []
+    must_multiply = True
+
+    for pattern in patterns:
+        if "don't" in pattern:
+            must_multiply = False
+        elif "do" in pattern:
+            must_multiply = True
+        else:
+            if must_multiply:
+                selection.append(pattern)
+
+    return selection
 
 
 def part_one():
-    return sum(((p[0] * p[1]) for p in  extract_pairs()))
+    pattern = r"(mul\(\d+,\d+\))"
+    muls = extract(pattern)
+    return sum(multiply(mul) for mul in muls)
+
+
+def part_two():
+    pattern = r"(do\(\)|don't\(\)|mul\(\d+,\d+\))"
+    muls = tokenize(extract(pattern))
+    return sum(multiply(mul) for mul in muls)
 
 
 print(f"Part 1: {part_one()}")
+print(f"Part 2: {part_two()}")
