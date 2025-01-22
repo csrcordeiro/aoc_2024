@@ -16,17 +16,17 @@ func getColumns(input string) ([]int, []int) {
 
 	pattern := regexp.MustCompile("(\\d+)")
 
-	var firstColumn  []int
+	var firstColumn []int
 	var secondColumn []int
 
-	firstColumn  = make([]int, len(lines))
+	firstColumn = make([]int, len(lines))
 	secondColumn = make([]int, len(lines))
 
 	for i, row := range lines {
 		extracted := pattern.FindAllString(row, -1)
 
-		firstColumn[i],  _ = strconv.Atoi(extracted[0])
-		secondColumn[i], _ = strconv.Atoi(extracted[len(extracted) - 1])
+		firstColumn[i], _ = strconv.Atoi(extracted[0])
+		secondColumn[i], _ = strconv.Atoi(extracted[len(extracted)-1])
 	}
 
 	return firstColumn, secondColumn
@@ -66,9 +66,43 @@ func partOne(content string) int {
 	return sumAll(distances)
 }
 
-func main () {
-	content := common.ReadInput("day1.in")
+func countFrequency(firstColumn []int, secondColumn []int) int {
+	frequency := make(map[int]int)
 
-	fmt.Println(partOne(content))
+	for _, firstValue := range firstColumn {
+		for _, secondValue := range secondColumn {
+			if firstValue != secondValue {
+				continue
+			}
+
+			freq, ok := frequency[firstValue]
+
+			if ok {
+				frequency[firstValue] = freq + 1
+			} else {
+				frequency[firstValue] = 1
+			}
+		}
+
+	}
+
+	total := 0
+	for number, freq := range frequency {
+		total += number * freq
+	}
+
+	return total
 }
 
+func partTwo(content string) int {
+	first, second := getColumns(content)
+
+	return countFrequency(first, second)
+}
+
+func main() {
+	content := common.ReadInput("day1.in")
+
+	fmt.Printf("Part 1: %d\n", partOne(content))
+	fmt.Printf("Part 2: %d\n", partTwo(content))
+}
