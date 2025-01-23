@@ -77,10 +77,49 @@ func countSafe(reports [][]int) int {
 	return counter
 }
 
+func countSafeWithDampener(reports [][]int) int {
+	counter := 0
+
+	for _, report := range reports {
+		combinations := makeCombinations(report)
+		for _, comb := range combinations {
+			if isReportSafe(comb) {
+				counter++
+				break
+			}
+		}
+	}
+
+	return counter
+}
+
+func makeCombinations(report []int) [][]int {
+	combinations := make([][]int, 0)
+	nCombinations := len(report)
+
+	for i := 0; i < nCombinations; i++ {
+		newCombinations := make([]int, 0)
+		for j, element := range report {
+			if i != j {
+				newCombinations = append(newCombinations, element)
+			}
+		}
+
+		combinations = append(combinations, newCombinations)
+	}
+
+	return combinations
+}
+
 func partOne() int {
 	return countSafe(measures)
 }
 
+func partTwo() int {
+	return countSafeWithDampener(measures)
+}
+
 func main() {
 	fmt.Printf("Part 1: %d\n", partOne())
+	fmt.Printf("Part 2: %d\n", partTwo())
 }
