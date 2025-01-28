@@ -32,7 +32,6 @@ func (m *Machine) String() string {
 	)
 }
 
-
 func init() {
 	content := common.ReadInput("day13.in")
 
@@ -57,11 +56,14 @@ func init() {
 // Very fancy stuff.
 //
 // https://www.youtube.com/watch?v=jBsC34PxzoM
-func cost(machine *Machine) int {
+func cost(machine *Machine, offset int) int {
 	det := float64((machine.A[0] * machine.B[1]) - (machine.A[1] * machine.B[0]))
 
-	a := int(float64(machine.Prize[0] * machine.B[1] - machine.Prize[1] * machine.B[0]) / det)
-	b := int(float64(machine.Prize[1] * machine.A[0] - machine.Prize[0] * machine.A[1]) / det)
+	prize1 := machine.Prize[0] + offset
+	prize2 := machine.Prize[1] + offset
+
+	a := int(float64(prize1*machine.B[1]-prize2*machine.B[0]) / det)
+	b := int(float64(prize2*machine.A[0]-prize1*machine.A[1]) / det)
 
 	testA1 := machine.A[0] * a
 	testA2 := machine.A[1] * a
@@ -69,8 +71,8 @@ func cost(machine *Machine) int {
 	testB1 := machine.B[0] * b
 	testB2 := machine.B[1] * b
 
-	if testA1 + testB1 == machine.Prize[0] && testB2 + testA2 == machine.Prize[1] {
-		return int(a * 3 + b)
+	if testA1+testB1 == prize1 && testB2+testA2 == prize2 {
+		return int(a*3 + b)
 	}
 
 	return 0
@@ -87,11 +89,25 @@ func extractValues(entry string) []int {
 	return buttons
 }
 
-func main() {
+func partOne() int {
 	solution := 0
 	for _, machine := range machines {
-		solution += cost(machine)
+		solution += cost(machine, 0)
 	}
 
-	fmt.Println(fmt.Sprintf("Part 1: %d", solution))
+	return solution
+}
+
+func partTwo() int {
+	solution := 0
+	for _, machine := range machines {
+		solution += cost(machine, 10_000_000_000_000)
+	}
+
+	return solution
+}
+
+func main() {
+	fmt.Println(fmt.Sprintf("Part 1: %d", partOne()))
+	fmt.Println(fmt.Sprintf("Part 2: %d", partTwo()))
 }
