@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"math"
-	"math/big"
 	"regexp"
 	"strconv"
 	"strings"
@@ -12,15 +11,15 @@ import (
 )
 
 type entry struct {
-	target  *big.Int
-	numbers []*big.Int
+	target  int64
+	numbers []int64
 }
 
-func (e entry) Target() *big.Int {
+func (e entry) Target() int64 {
 	return e.target
 }
 
-func (e entry) Numbers() []*big.Int {
+func (e entry) Numbers() []int64 {
 	return e.numbers
 }
 
@@ -50,13 +49,13 @@ func extractEntry(row string) *entry {
 	elements := extracted[1:]
 
 	newEntry := &entry{
-		target:  big.NewInt(int64(target)),
-		numbers: make([]*big.Int, len(elements)),
+		target:  int64(target),
+		numbers: make([]int64, len(elements)),
 	}
 
 	for i, n := range elements {
 		number, _ := strconv.Atoi(n)
-		newEntry.numbers[i] = big.NewInt(int64(number))
+		newEntry.numbers[i] = int64(number)
 	}
 
 	return newEntry
@@ -106,26 +105,28 @@ func combinations(entry *entry, start []string) []string {
 func hasCombination(entry *entry, combinations []string) bool {
 	numbers := entry.Numbers()
 
-	var result *big.Int
+	var result int64
 
 	for i := 0; i < len(combinations); i++ {
 		comb := combinations[i]
 
-		result = big.NewInt(numbers[0].Int64())
+		result = int64(numbers[0])
 
 		for i, char := range comb {
 			number := numbers[i+1]
 
 			if char == '*' {
-				result.Mul(result, number)
+				result *= number
 			} else if char == '+' {
-				result.Add(result, number)
+				result += number
 			} else {
-				result.SetString(result.String()+number.String(), 10)
+				strResult := strconv.FormatInt(result, 10)
+				strNumber := strconv.FormatInt(number, 10)
+				result, _ = strconv.ParseInt(strResult+strNumber, 10, 64)
 			}
 		}
 
-		if result.Cmp(entry.Target()) == 0 {
+		if result == entry.Target() {
 			return true
 		}
 	}
@@ -133,7 +134,7 @@ func hasCombination(entry *entry, combinations []string) bool {
 	return false
 }
 
-func processRow(row string, start []string) *big.Int {
+func processRow(row string, start []string) int64 {
 	entry := extractEntry(row)
 	opCombinations := combinations(entry, start)
 
@@ -141,46 +142,46 @@ func processRow(row string, start []string) *big.Int {
 		return entry.Target()
 	}
 
-	return big.NewInt(0)
+	return int64(0)
 }
 
-func processRowGoroutine(row string, start []string, channel chan *big.Int) {
+func processRowGoroutine(row string, start []string, channel chan int64) {
 	channel <- processRow(row, start)
 }
 
-func processRowsWithGoroutines(rows []string, start []string) *big.Int {
+func processRowsWithGoroutines(rows []string, start []string) int64 {
 	inputSize := len(rows)
 
-	results := make(chan *big.Int, inputSize)
+	results := make(chan int64, inputSize)
 
 	for i := 0; i < inputSize; i++ {
 		go processRowGoroutine(rows[i], start, results)
 	}
 
-	res := big.NewInt(0)
+	res := int64(0)
 	for i := 0; i < inputSize; i++ {
 		processedRow := <-results
-		res.Add(res, processedRow)
+		res += processedRow
 	}
 
 	return res
 }
 
-func processRows(rows []string, start []string) *big.Int {
-	res := big.NewInt(0)
+func processRows(rows []string, start []string) int64 {
+	res := int64(0)
 
 	for i := 0; i < len(rows); i++ {
-		res.Add(res, processRow(rows[i], start))
+		res += processRow(rows[i], start)
 	}
 
 	return res
 }
 
-func partOne(rows []string) *big.Int {
+func partOne(rows []string) int64 {
 	return processRowsWithGoroutines(rows, []string{"+", "*"})
 }
 
-func partTwo(rows []string) *big.Int {
+func partTwo(rows []string) int64 {
 	return processRowsWithGoroutines(rows, []string{"+", "*", "c"})
 }
 
