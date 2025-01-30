@@ -2,7 +2,6 @@ package aoc_java.days;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -54,52 +53,52 @@ class Day7Solution {
 	}
 
 	private Long calculate(String[] possibilities) {
-		return entries.stream().map((entry) -> {
+		return entries.parallelStream().map((entry) -> {
 			List<String> permutations = generatePermutation(entry, possibilities);
-			BigDecimal value = calculateValues(entry, permutations);
+			Long value = calculateValues(entry, permutations);
 
-			return value.equals(BigDecimal.valueOf(entry.target())) ? entry.target() : 0L;
+			return value.equals(Long.valueOf(entry.target())) ? entry.target() : 0L;
 		}).reduce(0l, (acc, value) -> acc + value);
 	}
 
-	private BigDecimal calculateValues(Day7Entry entry, List<String> permutations) {
+	private Long calculateValues(Day7Entry entry, List<String> permutations) {
 
 		for (String permutation : permutations) {
 			char[] ops = permutation.toCharArray();
 			List<Integer> equations = entry.equations();
-			BigDecimal acc = BigDecimal.valueOf(equations.get(0));
+			Long acc = Long.valueOf(equations.get(0));
 
 			for (int i = 0, j = 1; i < ops.length; i++, j++) {
-				Integer number = equations.get(j);
+				Long number = Long.valueOf(equations.get(j));
 
 				char op = ops[i];
 
 				if (op == '+') {
-					acc = acc.add(BigDecimal.valueOf(number));
+					acc = acc + Long.valueOf(number);
 				}
 
 				if (op == '*') {
-					if (acc.equals(BigDecimal.ZERO)) {
-						acc = BigDecimal.ONE;
+					if (acc.equals(0l)) {
+						acc = 1l;
 					}
 
-					acc = acc.multiply(BigDecimal.valueOf(number));
+					acc = acc * Long.valueOf(number);
 				}
 
 				if (op == 'c') {
 					String newValue = acc.toString() + number.toString();
 
-					acc = new BigDecimal(newValue);
+					acc = Long.valueOf(newValue);
 				}
 			}
 
-			if (acc.equals(BigDecimal.valueOf(entry.target()))) {
+			if (acc.equals(Long.valueOf(entry.target()))) {
 				return acc;
 			}
 
 		}
 
-		return BigDecimal.ZERO;
+		return 0l;
 	}
 
 	private List<String> generatePermutation(Day7Entry entry, String[] possibilities) {
