@@ -30,9 +30,20 @@ def permutations(n, ops):
     return new
 
 
+def decimal_place(number):
+    places = 1
+    new_number = number
+
+    while int(new_number / 10) > 0:
+        places += 1
+        new_number = int(new_number / 10)
+
+    return 10 ** places
+
+
 def interpret_symbol(n1, n2, symbol):
     if symbol == 'c':
-        return int(f"{n1}{n2}")
+        return (n1 * decimal_place(n2)) + n2
 
     if symbol == '+':
         return n1 + n2
@@ -45,7 +56,8 @@ def apply_operations(operations, equations):
 
     return reduce(
         lambda acc, number : interpret_symbol(acc, number, next(symbols)),
-        equations
+        equations[1:],
+        equations[0]
     )
 
 

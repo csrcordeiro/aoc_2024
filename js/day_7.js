@@ -36,6 +36,18 @@ function possibilities(n, ops) {
   return permutations;
 }
 
+function getTens(number) {
+  let places = 1;
+  let new_number = number;
+
+  while (Math.floor(new_number / 10) > 0) {
+    places++;
+    new_number = Math.floor(new_number / 10);
+  }
+
+  return 10 ** places;
+}
+
 function matchedEquation(equations, permutations, target) {
   for (let i = 0; i < permutations.length; i++) {
     const ops = permutations[i].split('');
@@ -44,7 +56,8 @@ function matchedEquation(equations, permutations, target) {
       const op = ops.shift();
 
       if (op === 'c') {
-        return parseInt(`${acc}${number}`);
+        // return parseInt(`${acc}${number}`);
+        return (acc * getTens(number)) + number;
       }
 
       if (op === '+') {
